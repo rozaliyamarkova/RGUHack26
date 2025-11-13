@@ -1,4 +1,10 @@
 ![logo](.assets/final-logo.svg)
 
-# RGUHack26
-Submit your code here from RGUHack26
+# Welcome to RGU Hack 26!
+
+## This is your repo to submit your code for judging at the end of the hack good luck
+
+
+
+
+### Info about the hack here
