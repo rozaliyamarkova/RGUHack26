@@ -1,8 +1,9 @@
 ![logo](.assets/final-logo.svg)
 
 # Welcome to RGU Hack 26!
+## Fork this repo to get started!
 
-## This is your repo to submit your code for judging at the end of the hack good luck
+#### At the end of the hack make sure to put all of your code into the forked repo for judging
 
 
 
