@@ -9,7 +9,14 @@ If you have any issues come to the help desk!
 # The Challenges
 The challenges for this year that have been chosen by our sponsors are below, pick one and get started using any languages or frameworks you like!
 
-## - Core29 - [title]
+Challenges sponsored by:
+
+
+<img src=".assets/core29-endorsed.png" width="150" height="100" alt="Thumbnail" /><img src=".assets/salus.png" width="150" height="100" alt="Thumbnail" /> <img src=".assets/sword.png" width="150" height="100" alt="Thumbnail" /><img src=".assets/socet.png" width="150" height="100" alt="Thumbnail" />
+
+
+## Core29 - [title]
+  
 
 
 ## - Salus - [Title]
@@ -18,5 +25,11 @@ The challenges for this year that have been chosen by our sponsors are below, pi
 ## - Sword - [Title]
 
 ## - SoCET - [Title]
+
+-----
+
+<img width="200" height="147" alt="image" src="https://github.com/user-attachments/assets/6e5e8b95-4d36-43e5-82b8-71b3ad1fef09" />
+
+
 
 #### Join our discord server [https://discord.gg/MuntB88f](https://discord.gg/MuntB88f)
