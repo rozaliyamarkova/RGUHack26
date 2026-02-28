@@ -20,7 +20,7 @@ from django.urls import path
 from assignments.schema import ReadAssignment
 from assignments.models import Assignment
 from courses.schema import CreateCourse, ReadCourse
-from students.schema import CreateStudent, ReadStudent
+from students.schema import CreateStudent, CreateStudentResponse, ReadStudent
 from ninja import NinjaAPI
 from students.models import Student
 from ninja.security import HttpBearer
@@ -48,7 +48,7 @@ def get_students(request):
     students = Student.objects.all()
     return students
 
-@api.post("/students", auth=None, response=ReadStudent)
+@api.post("/students", auth=None, response=CreateStudentResponse)
 def create_student(request, data: CreateStudent):
     student = Student.objects.create(
         name=data.name

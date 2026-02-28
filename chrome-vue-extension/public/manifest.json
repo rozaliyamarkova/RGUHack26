@@ -1,0 +1,22 @@
+{
+  "name": "Hello Extensions",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["sidePanel", "storage","activeTab"],
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "action": {
+    "default_icon": "hello_extensions.png"
+  },
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "content_scripts": [
+       {
+       "matches": ["<all_urls>"],
+       "js": ["main.js"]
+       }
+   ]
+}

@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: #F5F2EE;
+  height: 100%;
+  width: 100%;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+  min-height: 100vh;
+  background-color: #F5F2EE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  padding: 24px;
+}
+
+.card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: none;
+  text-align: center;
+}
+
+.icon {
+  font-size: 24px;
+  color: #C8A96E;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  color: #1C1C1E;
+  margin-bottom: 8px;
+}
+
+.name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 40px;
+  color: #1C1C1E;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 300;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #888;
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1.5px solid #E5E0D8;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  background: #FAFAF8;
+  color: #1C1C1E;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: #C8A96E;
+}
+
+.input::placeholder {
+  color: #BBBAB5;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  background: #1C1C1E;
+  color: #F5F2EE;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  background: #2E2E30;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.error {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #D04A4A;
+}
+
+.divider {
+  width: 40px;
+  height: 1.5px;
+  background: #E5E0D8;
+  margin: 28px auto;
+}
+
+.tip {
+  font-size: 13px;
+  color: #BBBAB5;
+  font-weight: 300;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
