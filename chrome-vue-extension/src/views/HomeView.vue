@@ -93,6 +93,29 @@ async function addModule() {
 
 
 
+
+const generateDMS = (coords, isLat) => {
+  const absCoords = Math.abs(coords);
+  const deg = Math.floor(absCoords);
+  const min = Math.floor((absCoords - deg) * 60);
+  const sec = ((absCoords - deg - min / 60) * 3600).toFixed(1);
+  const direction = coords >= 0 ? (isLat ? 'N' : 'E') : isLat ? 'S' : 'W';
+  console.log('hello');
+  return `${deg}°${min}'${sec}"${direction}`;
+};
+
+navigator.geolocation.getCurrentPosition(
+  (loc) => {
+    const { coords } = loc;
+    console.log(loc);
+    let {latitude, longitude} = coords;
+    latitude_ref.value = latitude;
+    longitude_ref.value = longitude;
+
+
+    console.log(`position: ${latitude_ref.value}, ${longitude_ref.value}`);
+  }
+);
 </script>
 
 <template>
@@ -153,6 +176,12 @@ async function addModule() {
       </div>
     </div>
 
-    <
+    <!-- Bus Timetable screen -->
+    <div v-else-if="screen === 'bus-timetable'" class="card fade-in">
+      <div class="input-group">
+        <div id="tester"> {{latitude_ref}} </div>
+
+      </div>
+    </div>
   </div>
 </template>
