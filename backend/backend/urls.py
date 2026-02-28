@@ -17,11 +17,25 @@ Including another URLconf
 from typing import List
 from django.contrib import admin
 from django.urls import path
+from assignments.schema import ReadAssignment
+from assignments.models import Assignment
+from courses.schema import CreateCourse, ReadCourse
 from students.schema import CreateStudent, ReadStudent
 from ninja import NinjaAPI
 from students.models import Student
+from ninja.security import HttpBearer
 
-api = NinjaAPI()
+class AuthBearer(HttpBearer):
+    def authenticate(self, request, token):
+        try:
+            student = Student.objects.get(user_id=token)
+            return student
+        except Student.DoesNotExist:
+            return None
+        
+
+api = NinjaAPI(auth=AuthBearer)
+
 
 @api.get("/test")
 def status(request):
@@ -34,29 +48,54 @@ def get_students(request):
     students = Student.objects.all()
     return students
 
-@api.post("/students")
+@api.post("/students", auth=None, response=ReadStudent)
 def create_student(request, data: CreateStudent):
     student = Student.objects.create(
         name=data.name
     )
-    return student.user_id
+    return student
+
+@api.get("/students/me", response=ReadStudent)
+def get_current_student(request):
+    return request.auth
 
 # Courses
 
-@api.get("/students/{student_id}/courses")
-def get_student_courses(request, student_id: str):
-    student = Student.objects.get(user_id=student_id)
-    courses = student.courses.all()
+@api.get("/courses", response=List[ReadCourse])
+def get_student_courses(request):
+    courses = request.auth.courses.all()
     return courses
 
-@api.post("/students/{student_id}/courses")
-def create_student_course(request, student_id: str, data: dict):
-    student = Student.objects.get(user_id=student_id)
-    course = student.courses.create(name=data.name)
-    return course.id
+@api.post("/courses", response=ReadCourse)
+def create_student_course(request, data: CreateCourse):
+    course = request.auth.courses.create(name=data.name)
+    return course
+
+@api.delete("/courses/{course_id}")
+def delete_student_course(request, course_id: int):
+    course = request.auth.courses.get(id=course_id)
+    course.delete()
+    return {"status": "deleted"}
 
 # Assignments
 
+@api.get("/courses/{course_id}/assignments", response=List[ReadAssignment])
+def get_course_assignments(request, course_id: int):
+    course = request.auth.courses.get(id=course_id)
+    assignments = course.assignments.all()
+    return assignments
+
+@api.post("/courses/{course_id}/assignments", response=ReadAssignment)
+def create_course_assignment(request, course_id: int, data: ReadAssignment):
+    course = request.auth.courses.get(id=course_id)
+    assignment = course.assignments.create(name=data.name, description=data.description)
+    return assignment
+
+@api.delete("/assignments/{assignment_id}")
+def delete_course_assignment(request, assignment_id: int):
+    assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
+    assignment.delete()
+    return {"status": "deleted"}
 
 
 

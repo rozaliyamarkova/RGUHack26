@@ -6,3 +6,4 @@ class CreateStudent(Schema):
 
 class ReadStudent(Schema):
     name: str
+    user_id:str

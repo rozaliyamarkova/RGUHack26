@@ -6,3 +6,6 @@ from students.models import Student
 class Course(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='courses')
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name

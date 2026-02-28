@@ -8,3 +8,19 @@ class CreateAssignment(Schema):
     weighting: float|None = None
     grade: float|None = None
     
+class ReadAssignment(Schema):
+    id: int
+    title: str
+    due_date: str
+    time_needed:int
+    time_estimated:int|None = None
+    weighting: float|None = None
+    grade: float|None = None
+
+class UpdateAssignment(Schema):
+    title: str|None = None
+    due_date: str|None = None
+    time_needed:int|None = None
+    weighting: float|None = None
+    grade: float|None = None
+    
