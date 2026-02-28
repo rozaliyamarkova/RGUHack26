@@ -1,1 +1,5 @@
 venv/
+*.pyc
+__pycache__/
+*/__pycache__/
+backend/backend/__pycache__/settings.cpython-313.pyc

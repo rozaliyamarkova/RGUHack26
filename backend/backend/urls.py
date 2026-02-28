@@ -14,15 +14,32 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from typing import List
 from django.contrib import admin
 from django.urls import path
+from students.schema import CreateStudent, ReadStudent
 from ninja import NinjaAPI
+from students.models import Student
 
 api = NinjaAPI()
 
 @api.get("/test")
 def status(request):
     return {"status": "ok"}
+
+
+
+@api.post("/students")
+def create_student(request, data: CreateStudent):
+    student = Student.objects.create(
+        name=data.name
+    )
+    return student.user_id
+
+@api.get("/students", response=List[ReadStudent])
+def get_students(request):
+    students = Student.objects.all()
+    return students
 
 urlpatterns = [
     path('admin/', admin.site.urls),
