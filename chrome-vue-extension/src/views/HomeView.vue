@@ -9,6 +9,8 @@ const error = ref('')
 const screen = ref('name')
 
 const modules = ref([])
+const latitude_ref = ref('')
+const longitude_ref = ref('')
 
 onMounted(() => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -146,7 +148,7 @@ navigator.geolocation.getCurrentPosition(
       <h1 class="name">Select a library to check occupancy</h1>
       <div class="divider"></div>
       <div class="input-group">
-        <button @click="screen = 'abdnlib'" class="btn">ABDN Library</button>
+        <button @click="screen = 'abdnlib'" class="btn">UOA Library</button>
         <button @click="screen = 'rgulib'" class="btn">RGU Library</button>
       </div>
     </div>
