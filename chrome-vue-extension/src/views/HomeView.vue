@@ -114,7 +114,30 @@ async function addModule() {
       <div class="input-group">
         <button @click="screen = 'modules'" class="btn">Modules</button>
         <button @click="screen = 'bus-timetable'" class="btn">Bus Timetable</button>
+        <button @click="screen = 'lib'" class="btn">Library</button>
       </div>
+    </div>
+
+    <!-- Library Choice -->
+    <div v-else-if="screen === 'lib'" class="card fade-in">
+      <h1 class="name">Select a library to check occupancy</h1>
+      <div class="divider"></div>
+      <div class="input-group">
+        <button @click="screen = 'abdnlib'" class="btn">ABDN Library</button>
+        <button @click="screen = 'rgulib'" class="btn">RGU Library</button>
+      </div>
+    </div>
+
+    <!-- RGU Library Occupancy -->
+    <div v-else-if="screen === 'rgulib'" class="card fade-in">
+      <h1 class="name">RGU Library Occupancy</h1>
+      <div class="divider"></div>
+    </div>
+
+    <!-- ABND Library Occupancy -->
+    <div v-else-if="screen === 'abdnlib'" class="card fade-in">
+      <h1 class="name">ABDN Library Occupancy</h1>
+      <div class="divider"></div>
     </div>
 
     <!-- Modules screen -->
