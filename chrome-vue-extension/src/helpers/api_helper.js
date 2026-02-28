@@ -41,3 +41,18 @@ export async function postRequest(path, payload) {
         console.error(err)
     }
 }
+
+export async function deleteRequest(path) {
+    try {
+        const response = await fetch(`${BASE_URL}${path}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${await getUserIdToken()}` },
+        })
+
+        const data = await response.json()
+        return data
+        
+    } catch (err) {
+        console.error(err)
+    }
+}
