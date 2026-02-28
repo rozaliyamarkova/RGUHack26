@@ -36,6 +36,16 @@ class AuthBearer(HttpBearer):
 
 api = NinjaAPI(auth=AuthBearer())
 
+from bustops.find_closest import find_closest_bus_stops
+from bustops.get_live_time import fetch_from_traveline_api
+from bustops.scheme import ReadBusStop, Bus
+
+from django.conf import settings
+
+
+from typing import List
+
+api = NinjaAPI()
 
 @api.get("/test")
 def status(request):
@@ -96,10 +106,30 @@ def delete_course_assignment(request, assignment_id: int):
     assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
     assignment.delete()
     return {"status": "deleted"}
+@api.get("/closest_busses", response=List[ReadBusStop])
+def status(request):
+    return find_closest_bus_stops("""57Â°7'7.2"N""", """2Â°8'4.3"W""")
 
+@api.get("/bus/{stop_id}", response=List[Bus])
+def bus_api(request, stop_id):
+    global daily_bus_request_count
+    all_buses = []
 
+    stop_data = fetch_from_traveline_api(stop_id, settings.BUS_API_USERNAME, settings.BUS_API_PASSWORD)
+    print(stop_data)
+    
+        
+
+    for bus in stop_data:
+        all_buses.append(bus)
+    
+    # Sort all buses by departure time
+    all_buses.sort(key=lambda x: x['departure_time'])
+    
+    return all_buses
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/v1/", api.urls)
 ]
+
