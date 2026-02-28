@@ -10,7 +10,7 @@ Click Load unpacked, navigate to the repository folder, choose the "chrome-exten
 
 It should now be in chrome extensions
 
-### Server
+### Backend
 
 From top level do 
 ```
@@ -21,3 +21,18 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+Then to run the backend
+```
+cd backend
+python manage.py runserver
+```
+
+
+```
+python manage.py startapp APPNAME
+```
+
+
+API stuff
+https://django-ninja.dev/
