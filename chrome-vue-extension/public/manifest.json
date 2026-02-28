@@ -1,14 +1,14 @@
 {
-  "name": "Hello Extensions",
+  "name": "Banana Books",
   "description": "Base Level Extension",
-  "version": "1.0",
+  "version": "1.1",
   "manifest_version": 3,
   "permissions": ["sidePanel", "storage","activeTab"],
   "side_panel": {
     "default_path": "index.html"
   },
   "action": {
-    "default_icon": "hello_extensions.png"
+    "default_icon": "image.jpg"
   },
   "background": {
     "service_worker": "background/background.js"
