@@ -123,14 +123,10 @@ async function addModule() {
         <button @click="screen = 'assignments'" class="btn">Assignments</button>
         <button @click="screen = 'notes'" class="btn">Notes</button>
         <button @click="screen = 'choice1'" class="btn">Back</button>
-
+        <hr />
         <input v-model="newModuleName" type="text" placeholder="Enter name..." class="input" />
         <button class="btn" @click="addModule">Add Module</button>
-        <ul class="module-list">
-          <li v-for="course in modules" :key="course.id" class="module-item">
-            <button class="btn">{{ course.name }}</button>
-          </li>
-        </ul>
+        <button v-for="course in modules" :key="course.id"class="btn is-light">{{ course.name }}</button>
       </div>
     </div>
 
