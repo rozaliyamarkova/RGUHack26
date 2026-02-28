@@ -46,8 +46,6 @@ from django.conf import settings
 
 from typing import List
 
-api = NinjaAPI()
-
 @api.get("/test")
 def status(request):
     return {"status": "ok"}

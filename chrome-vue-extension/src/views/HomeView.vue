@@ -1,10 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { getRequest, postRequest } from '../helpers/api_helper'
 
+const newModuleName = ref('')
 const nameInput = ref('')
 const userName = ref('')
 const error = ref('')
 const screen = ref('name')
+
+const modules = ref([])
 
 onMounted(() => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -12,10 +16,26 @@ onMounted(() => {
       if (data.userName) {
         userName.value = data.userName
         screen.value = 'choice1'
+
+      }
+    })
+    chrome.storage.sync.get("user_id", async (data) => {
+      if (data.user_id) {
+        try {
+
+          modules.value = await getRequest('/courses')
+  
+        } catch (err) {
+          console.error('Error fetching modules:', err)
+        }
       }
     })
   }
 })
+
+function logEverything() {
+  console.log(modules.value)
+}
 
 function saveStudent(data) {  
   if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -59,6 +79,20 @@ async function registerStudent() {
     error.value = 'Please use letters only (A-Z).'
   }
 }
+
+async function addModule() {
+  try {
+    const data = await postRequest('/courses', { name: newModuleName.value })
+    console.log('Module added:', data)
+    newModuleName.value = ''
+    modules.value.push(data)
+  } catch (err) {
+    console.error('Error adding module:', err)
+  }
+}
+
+
+
 </script>
 
 <template>
@@ -89,7 +123,17 @@ async function registerStudent() {
         <button @click="screen = 'assignments'" class="btn">Assignments</button>
         <button @click="screen = 'notes'" class="btn">Notes</button>
         <button @click="screen = 'choice1'" class="btn">Back</button>
+
+        <input v-model="newModuleName" type="text" placeholder="Enter name..." class="input" />
+        <button class="btn" @click="addModule">Add Module</button>
+        <ul class="module-list">
+          <li v-for="course in modules" :key="course.id" class="module-item">
+            <button class="btn">{{ course.name }}</button>
+          </li>
+        </ul>
       </div>
     </div>
+
+    <
   </div>
 </template>
