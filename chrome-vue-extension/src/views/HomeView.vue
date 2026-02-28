@@ -20,13 +20,7 @@ function saveStudent(data) {
   })
 }
 
-function getUserIdToken() {
-  return new Promise((resolve) => {
-    chrome.storage.sync.get('user_id', (data) => {
-      resolve(data.user_id)
-    })
-  })
-}
+
 
 async function registerStudent() {
   if (!nameInput.value.trim()) {
