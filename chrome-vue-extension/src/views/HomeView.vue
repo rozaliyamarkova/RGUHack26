@@ -148,7 +148,7 @@ navigator.geolocation.getCurrentPosition(
       <h1 class="name">Select a library to check occupancy</h1>
       <div class="divider"></div>
       <div class="input-group">
-        <button @click="screen = 'abdnlib'" class="btn">UOA Library</button>
+        <button @click="screen = 'uoalib'" class="btn">UOA Library</button>
         <button @click="screen = 'rgulib'" class="btn">RGU Library</button>
       </div>
     </div>
@@ -160,8 +160,8 @@ navigator.geolocation.getCurrentPosition(
     </div>
 
     <!-- ABND Library Occupancy -->
-    <div v-else-if="screen === 'abdnlib'" class="card fade-in">
-      <h1 class="name">ABDN Library Occupancy</h1>
+    <div v-else-if="screen === 'uoalib'" class="card fade-in">
+      <h1 class="name">UOA Library Occupancy</h1>
       <div class="divider"></div>
     </div>
 
@@ -175,6 +175,14 @@ navigator.geolocation.getCurrentPosition(
         <input v-model="newModuleName" type="text" placeholder="Enter name..." class="input" />
         <button class="btn" @click="addModule">Add Module</button>
         <button v-for="course in modules" :key="course.id"class="btn is-light">{{ course.name }}</button>
+      </div>
+    </div>
+
+    <!-- Specific module screen -->
+    <div v-else-if="screen === course.name" class="card fade-in">
+      <div class="input-group">
+        <h1 class="name">{{ course.name }}</h1>
+        <button @click="screen = 'modules'" class="btn">Back</button>
       </div>
     </div>
 
