@@ -28,6 +28,11 @@ def status(request):
     return {"status": "ok"}
 
 
+# Students
+@api.get("/students", response=List[ReadStudent])
+def get_students(request):
+    students = Student.objects.all()
+    return students
 
 @api.post("/students")
 def create_student(request, data: CreateStudent):
@@ -36,10 +41,24 @@ def create_student(request, data: CreateStudent):
     )
     return student.user_id
 
-@api.get("/students", response=List[ReadStudent])
-def get_students(request):
-    students = Student.objects.all()
-    return students
+# Courses
+
+@api.get("/students/{student_id}/courses")
+def get_student_courses(request, student_id: str):
+    student = Student.objects.get(user_id=student_id)
+    courses = student.courses.all()
+    return courses
+
+@api.post("/students/{student_id}/courses")
+def create_student_course(request, student_id: str, data: dict):
+    student = Student.objects.get(user_id=student_id)
+    course = student.courses.create(name=data.name)
+    return course.id
+
+# Assignments
+
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
