@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +28,10 @@ SECRET_KEY = 'django-insecure-^ve4^_kn2au_qz6qosd276eu-5ck+&fwc*)!9i!%228km%f@^+
 DEBUG = True
 
 ALLOWED_HOSTS = []
+load_dotenv()
+
+BUS_API_USERNAME = os.getenv("BUS_API_USERNAME")
+BUS_API_PASSWORD = os.getenv("BUS_API_PASSWORD")
 
 
 # Application definition
@@ -40,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "courses",
     "assignments",
-    "students"
+    "students",
+    'bustops',
 ]
 
 MIDDLEWARE = [
