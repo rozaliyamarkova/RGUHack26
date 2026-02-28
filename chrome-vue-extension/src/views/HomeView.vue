@@ -1,10 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { getRequest, postRequest } from '../helpers/api_helper'
 
+const newModuleName = ref('')
 const nameInput = ref('')
 const userName = ref('')
 const error = ref('')
 const screen = ref('name')
+
+const modules = ref([])
 const latitude_ref = ref('')
 const longitude_ref = ref('')
 
@@ -15,10 +19,26 @@ onMounted(() => {
       if (data.userName) {
         userName.value = data.userName
         screen.value = 'choice1'
+
+      }
+    })
+    chrome.storage.sync.get("user_id", async (data) => {
+      if (data.user_id) {
+        try {
+
+          modules.value = await getRequest('/courses')
+  
+        } catch (err) {
+          console.error('Error fetching modules:', err)
+        }
       }
     })
   }
 })
+
+function logEverything() {
+  console.log(modules.value)
+}
 
 function saveStudent(data) {  
   if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -62,29 +82,6 @@ async function registerStudent() {
     error.value = 'Please use letters only (A-Z).'
   }
 }
-
-const generateDMS = (coords, isLat) => {
-  const absCoords = Math.abs(coords);
-  const deg = Math.floor(absCoords);
-  const min = Math.floor((absCoords - deg) * 60);
-  const sec = ((absCoords - deg - min / 60) * 3600).toFixed(1);
-  const direction = coords >= 0 ? (isLat ? 'N' : 'E') : isLat ? 'S' : 'W';
-  console.log('hello');
-  return `${deg}°${min}'${sec}"${direction}`;
-};
-
-navigator.geolocation.getCurrentPosition(
-  (loc) => {
-    const { coords } = loc;
-    console.log(loc);
-    let {latitude, longitude} = coords;
-    latitude_ref.value = latitude;
-    longitude_ref.value = longitude;
-
-
-    console.log(`position: ${latitude_ref.value}, ${longitude_ref.value}`);
-  }
-);
 </script>
 
 <template>
@@ -106,7 +103,30 @@ navigator.geolocation.getCurrentPosition(
       <div class="input-group">
         <button @click="screen = 'modules'" class="btn">Modules</button>
         <button @click="screen = 'bus-timetable'" class="btn">Bus Timetable</button>
+        <button @click="screen = 'lib'" class="btn">Library</button>
       </div>
+    </div>
+
+    <!-- Library Choice -->
+    <div v-else-if="screen === 'lib'" class="card fade-in">
+      <h1 class="name">Select a library to check occupancy</h1>
+      <div class="divider"></div>
+      <div class="input-group">
+        <button @click="screen = 'abdnlib'" class="btn">ABDN Library</button>
+        <button @click="screen = 'rgulib'" class="btn">RGU Library</button>
+      </div>
+    </div>
+
+    <!-- RGU Library Occupancy -->
+    <div v-else-if="screen === 'rgulib'" class="card fade-in">
+      <h1 class="name">RGU Library Occupancy</h1>
+      <div class="divider"></div>
+    </div>
+
+    <!-- ABND Library Occupancy -->
+    <div v-else-if="screen === 'abdnlib'" class="card fade-in">
+      <h1 class="name">ABDN Library Occupancy</h1>
+      <div class="divider"></div>
     </div>
 
     <!-- Modules screen -->
@@ -115,14 +135,14 @@ navigator.geolocation.getCurrentPosition(
         <button @click="screen = 'assignments'" class="btn">Assignments</button>
         <button @click="screen = 'notes'" class="btn">Notes</button>
         <button @click="screen = 'choice1'" class="btn">Back</button>
-      </div>
-    </div>
 
-    <!-- Bus Timetable screen -->
-    <div v-else-if="screen === 'bus-timetable'" class="card fade-in">
-      <div class="input-group">
-        <div id="tester"> {{latitude_ref}} </div>
-
+        <input v-model="newModuleName" type="text" placeholder="Enter name..." class="input" />
+        <button class="btn" @click="addModule">Add Module</button>
+        <ul class="module-list">
+          <li v-for="course in modules" :key="course.id" class="module-item">
+            <button class="btn">{{ course.name }}</button>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
