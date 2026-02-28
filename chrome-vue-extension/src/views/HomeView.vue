@@ -80,7 +80,6 @@ async function registerStudent() {
       <div class="input-group">
         <button @click="screen = 'modules'" class="btn">Modules</button>
         <button @click="screen = 'bus-timetable'" class="btn">Bus Timetable</button>
-        <button @click="screen = 'name'" class="btn">Back</button>
       </div>
     </div>
 
