@@ -8,7 +8,7 @@ function getUserIdToken() {
     })
   }
 
-async function getRequest(path) {  
+export async function getRequest(path) {  
     try {
         const response = await fetch(`${BASE_URL}${path}`, {
             method: 'GET',
@@ -27,7 +27,7 @@ async function getRequest(path) {
     }
 }
 
-async function postRequest(path, payload) {  
+export async function postRequest(path, payload) {  
     try {
         const response = await fetch(`${BASE_URL}${path}`, {
             method: 'POST',
