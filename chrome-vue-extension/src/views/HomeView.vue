@@ -7,10 +7,10 @@ const nameInput = ref('')
 const userName = ref('')
 const error = ref('')
 const screen = ref('name')
-
 const modules = ref([])
 const latitude_ref = ref('')
 const longitude_ref = ref('')
+const selectedCourse = ref(null)
 
 onMounted(() => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -26,7 +26,7 @@ onMounted(() => {
         try {
 
           modules.value = await getRequest('/courses')
-  
+
         } catch (err) {
           console.error('Error fetching modules:', err)
         }
@@ -35,11 +35,7 @@ onMounted(() => {
   }
 })
 
-function logEverything() {
-  console.log(modules.value)
-}
-
-function saveStudent(data) {  
+function saveStudent(data) {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.sync.set({ userName: data.name, user_id: data.user_id }, () => {
       userName.value = data.name
@@ -58,6 +54,11 @@ function getUserIdToken() {
       resolve(data.user_id)
     })
   })
+}
+
+function openCourse(course) {
+  selectedCourse.value = course
+  screen.value = 'course'
 }
 
 async function registerStudent() {
@@ -93,9 +94,6 @@ async function addModule() {
   }
 }
 
-
-
-
 const generateDMS = (coords, isLat) => {
   const absCoords = Math.abs(coords);
   const deg = Math.floor(absCoords);
@@ -110,7 +108,7 @@ navigator.geolocation.getCurrentPosition(
   (loc) => {
     const { coords } = loc;
     console.log(loc);
-    let {latitude, longitude} = coords;
+    let { latitude, longitude } = coords;
     latitude_ref.value = latitude;
     longitude_ref.value = longitude;
 
@@ -168,20 +166,19 @@ navigator.geolocation.getCurrentPosition(
     <!-- Modules screen -->
     <div v-else-if="screen === 'modules'" class="card fade-in">
       <div class="input-group">
-        <button @click="screen = 'assignments'" class="btn">Assignments</button>
-        <button @click="screen = 'notes'" class="btn">Notes</button>
         <button @click="screen = 'choice1'" class="btn">Back</button>
-        <hr />
-        <input v-model="newModuleName" type="text" placeholder="Enter name..." class="input" />
+        <input v-model="newModuleName" type="text" placeholder="Enter module name..." class="input" />
         <button class="btn" @click="addModule">Add Module</button>
-        <button v-for="course in modules" :key="course.id"class="btn is-light">{{ course.name }}</button>
+        <button v-for="course in modules" :key="course.id" class="btn" @click="openCourse(course)">
+          {{ course.name }}
+        </button>
       </div>
     </div>
 
     <!-- Specific module screen -->
-    <div v-else-if="screen === course.name" class="card fade-in">
+    <div v-else-if="screen === 'course'" class="card fade-in">
       <div class="input-group">
-        <h1 class="name">{{ course.name }}</h1>
+        <h1 class="name">{{ selectedCourse.name }}</h1>
         <button @click="screen = 'modules'" class="btn">Back</button>
       </div>
     </div>
@@ -189,7 +186,7 @@ navigator.geolocation.getCurrentPosition(
     <!-- Bus Timetable screen -->
     <div v-else-if="screen === 'bus-timetable'" class="card fade-in">
       <div class="input-group">
-        <div id="tester"> {{latitude_ref}} </div>
+        <div id="tester"> {{ latitude_ref }} </div>
 
       </div>
     </div>
