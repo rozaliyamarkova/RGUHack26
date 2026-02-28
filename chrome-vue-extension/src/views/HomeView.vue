@@ -35,12 +35,8 @@ async function registerStudent() {
       body: JSON.stringify({ name: nameInput.value })
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to register student')
-    }
-
     const data = await response.json()
-        
+
     saveStudent(data)
   } catch (err) {
     console.error(err)
