@@ -8,3 +8,10 @@ class ReadBusStop(Schema):
     longitude: str
     active: str
 
+class Bus(Schema):
+    line: str
+    direction: str
+    operator: str
+    scheduled_time: str
+    departure_time: str
+    is_realtime: bool
