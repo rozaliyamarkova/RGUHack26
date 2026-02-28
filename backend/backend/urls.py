@@ -54,35 +54,35 @@ def status(request):
 
 
 # Students
-@api.get("/students", response=List[ReadStudent])
+@api.get("/students", response=List[ReadStudent], tags=["Students"])
 def get_students(request):
     students = Student.objects.all()
     return students
 
-@api.post("/students", auth=None, response=CreateStudentResponse)
+@api.post("/students", auth=None, response=CreateStudentResponse, tags=["Students"])
 def create_student(request, data: CreateStudent):
     student = Student.objects.create(
         name=data.name
     )
     return student
 
-@api.get("/students/me", response=ReadStudent)
+@api.get("/students/me", response=ReadStudent, tags=["Students"])
 def get_current_student(request):
     return request.auth
 
 # Courses
 
-@api.get("/courses", response=List[ReadCourse])
+@api.get("/courses", response=List[ReadCourse], tags=["Courses"])
 def get_student_courses(request):
     courses = request.auth.courses.all()
     return courses
 
-@api.post("/courses", response=ReadCourse)
+@api.post("/courses", response=ReadCourse, tags=["Courses"])
 def create_student_course(request, data: CreateCourse):
     course = request.auth.courses.create(name=data.name)
     return course
 
-@api.delete("/courses/{course_id}")
+@api.delete("/courses/{course_id}", tags=["Courses"])
 def delete_student_course(request, course_id: int):
     course = request.auth.courses.get(id=course_id)
     course.delete()
@@ -90,38 +90,38 @@ def delete_student_course(request, course_id: int):
 
 # Assignments
 
-@api.get("/courses/{course_id}/assignments", response=List[ReadAssignment])
+@api.get("/courses/{course_id}/assignments", response=List[ReadAssignment], tags=["Assignments"])
 def get_course_assignments(request, course_id: int):
     course = request.auth.courses.get(id=course_id)
     assignments = course.assignments.all()
     return assignments
 
-@api.post("/courses/{course_id}/assignments", response=ReadAssignment)
+@api.post("/courses/{course_id}/assignments", response=ReadAssignment, tags=["Assignments"])
 def create_course_assignment(request, course_id: int, data: CreateAssignment):
     course = request.auth.courses.get(id=course_id)
     assignment = course.assignments.create(name=data.name, description=data.description)
     return assignment
 
-@api.delete("/assignments/{assignment_id}")
+@api.delete("/assignments/{assignment_id}", tags=["Assignments"])
 def delete_course_assignment(request, assignment_id: int):
     assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
     assignment.delete()
     return {"status": "deleted"}
 
 # Assignment log
-@api.post("/assignments/{assignment_id}/logs", response=ReadAssignmentLog)
+@api.post("/assignments/{assignment_id}/logs", response=ReadAssignmentLog, tags=["Assignment Logs"])
 def create_assignment_log(request, assignment_id:int, data: CreateAssignmentLog):
     assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
     log = assignment.logs.create(time_spent=data.time_spent, log_date=data.log_date)
     return log
 
-@api.get("/assignments/{assignment_id}/logs", response=List[ReadAssignmentLog])
+@api.get("/assignments/{assignment_id}/logs", response=List[ReadAssignmentLog], tags=["Assignment Logs"])
 def get_assignment_logs(request, assignment_id:int):
     assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
     logs = assignment.logs.all()
     return logs
 
-@api.get("/closest_busses", response=List[ReadBusStop])
+@api.get("/closest_busses", response=List[ReadBusStop],tags=["Busses"])
 def status(request):
     return find_closest_bus_stops("""57Â°7'7.2"N""", """2Â°8'4.3"W""")
 
