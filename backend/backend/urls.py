@@ -34,7 +34,7 @@ class AuthBearer(HttpBearer):
             return None
         
 
-api = NinjaAPI(auth=AuthBearer)
+api = NinjaAPI(auth=AuthBearer())
 
 
 @api.get("/test")
