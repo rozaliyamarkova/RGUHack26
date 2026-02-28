@@ -17,13 +17,14 @@ Including another URLconf
 from typing import List
 from django.contrib import admin
 from django.urls import path
-from assignments.schema import ReadAssignment
+from assignments.schema import ReadAssignment, CreateAssignmentLog, ReadAssignmentLog, CreateAssignment
 from assignments.models import Assignment
 from courses.schema import CreateCourse, ReadCourse
 from students.schema import CreateStudent, CreateStudentResponse, ReadStudent
 from ninja import NinjaAPI
 from students.models import Student
 from ninja.security import HttpBearer
+
 
 class AuthBearer(HttpBearer):
     def authenticate(self, request, token):
@@ -96,7 +97,7 @@ def get_course_assignments(request, course_id: int):
     return assignments
 
 @api.post("/courses/{course_id}/assignments", response=ReadAssignment)
-def create_course_assignment(request, course_id: int, data: ReadAssignment):
+def create_course_assignment(request, course_id: int, data: CreateAssignment):
     course = request.auth.courses.get(id=course_id)
     assignment = course.assignments.create(name=data.name, description=data.description)
     return assignment
@@ -106,6 +107,20 @@ def delete_course_assignment(request, assignment_id: int):
     assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
     assignment.delete()
     return {"status": "deleted"}
+
+# Assignment log
+@api.post("/assignments/{assignment_id}/logs", response=ReadAssignmentLog)
+def create_assignment_log(request, assignment_id:int, data: CreateAssignmentLog):
+    assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
+    log = assignment.logs.create(time_spent=data.time_spent, log_date=data.log_date)
+    return log
+
+@api.get("/assignments/{assignment_id}/logs", response=List[ReadAssignmentLog])
+def get_assignment_logs(request, assignment_id:int):
+    assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
+    logs = assignment.logs.all()
+    return logs
+
 @api.get("/closest_busses", response=List[ReadBusStop])
 def status(request):
     return find_closest_bus_stops("""57Â°7'7.2"N""", """2Â°8'4.3"W""")

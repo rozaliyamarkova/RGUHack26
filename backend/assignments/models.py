@@ -22,7 +22,7 @@ class Assignment(models.Model):
 
 class AssignmentLog(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='logs')
-    duration = models.IntegerField(help_text="Time spent on the assignment in minutes")
+    duration = models.IntegerField(help_text="Time spent on the assignment in minutes",blank=True, null=True)
 
     note = models.TextField(help_text="Optional note of what was achieved", null=True, blank=True)
 

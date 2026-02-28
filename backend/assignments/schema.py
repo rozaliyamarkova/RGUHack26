@@ -23,4 +23,13 @@ class UpdateAssignment(Schema):
     time_needed:int|None = None
     weighting: float|None = None
     grade: float|None = None
-    
+
+class CreateAssignmentLog(Schema):
+    duration: int|None = None
+    notes: str|None = None
+
+class ReadAssignmentLog(Schema):
+    id: int
+    duration: int|None = None
+    notes: str|None = None
+    created_at: str
