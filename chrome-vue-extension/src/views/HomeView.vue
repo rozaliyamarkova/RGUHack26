@@ -46,12 +46,11 @@ async function registerStudent() {
     }
 
     const data = await response.json()
-    console.log('Student registered:', data)
-    
+        
     saveStudent(data)
   } catch (err) {
     console.error(err)
-    error.value = 'Registration failed. Please try again.'
+    error.value = 'Please use letters only (A-Z).'
   }
 }
 </script>
@@ -59,7 +58,7 @@ async function registerStudent() {
 <template>
   <div class="container">
 
-    <!-- Name Form Screen -->
+    <!-- Screen that takes the name of the user -->
     <div v-if="!userName" class="card fade-in">
       <h1 class="title">Hello {{ nameInput }}!</h1>
       <div class="input-group">
@@ -76,7 +75,6 @@ async function registerStudent() {
 
     <!-- Greeting Screen -->
     <div v-else class="card fade-in">
-      <div class="icon">✦</div>
       <p class="label">Good to see you,</p>
       <h1 class="name">{{ userName }}</h1>
       <p class="subtitle">Ready to get things done today?</p>
