@@ -13,10 +13,17 @@ const busstops = ref([])
 const latitude_ref = ref('')
 const longitude_ref = ref('')
 const selectedCourse = ref(null)
+const selectedCourseAssignments = ref([])
 
 const bustimes = ref([])
 
 const favourite_bus = ref('')
+
+const newAssignmentName = ref('')
+const newAssignmentDueDate = ref('')
+const newAssignmentTimeNeeded = ref('')
+const newAssignmentWeighting = ref('')
+const newAssignmentGrade = ref('')
 
 
 const sdr_library_occupancy = ref({})
@@ -64,17 +71,39 @@ function saveStudent(data) {
   }
 }
 
-function getUserIdToken() {
-  return new Promise((resolve) => {
-    chrome.storage.sync.get('user_id', (data) => {
-      resolve(data.user_id)
-    })
-  })
-}
 
-function openCourse(course) {
+async function openCourse(course) {
   selectedCourse.value = course
   screen.value = 'course'
+  const assignments = await getRequest(`/courses/${course.id}/assignments`)
+  selectedCourseAssignments.value = assignments
+}
+
+async function addAssignment() {
+  try {
+    /*
+  title: str
+    due_date: str
+    time_needed:int
+    weighting: float|None = None
+    grade: float|None = No
+    */
+    const data = await postRequest(`/courses/${selectedCourse.value.id}/assignments`, { title: newAssignmentName.value,
+        due_date: newAssignmentDueDate.value,
+        time_needed: newAssignmentTimeNeeded.value,
+        weighting: newAssignmentWeighting.value || null,
+        grade: newAssignmentGrade.value || null,
+     })
+    console.log('Assignment added:', data)
+    newAssignmentName.value = ''
+      newAssignmentDueDate.value = ''
+      newAssignmentTimeNeeded.value = ''
+      newAssignmentWeighting.value = ''
+      newAssignmentGrade.value = ''
+    selectedCourseAssignments.value.push(data)
+  } catch (err) {
+    console.error('Error adding assignment:', err)
+  }
 }
 
 async function registerStudent() {
@@ -260,6 +289,17 @@ const format_favourite_bus = () => {
       <div class="input-group">
         <h1 class="name">{{ selectedCourse.name }}</h1>
         <button @click="screen = 'modules'" class="btn">Back</button>
+        <hr />
+        <input v-model="newAssignmentName" type="text" placeholder="Assignment name..." class="input" />
+        <input v-model="newAssignmentDueDate" type="date" class="input" />
+        <input v-model="newAssignmentTimeNeeded" type="number" placeholder="Time needed (hours)..." class="input" />
+        <input v-model="newAssignmentWeighting" type="number" step="0.01" placeholder="Weighting (0-1)..." class="input" />
+        <input v-model="newAssignmentGrade" type="number" step="0.01" placeholder="Grade (0-1)..." class="input" />
+        <button class="btn" @click="addAssignment">Add Assignment</button>
+
+        <button v-for="assignment in selectedCourseAssignments" :key="assignment.id" class="btn">
+          {{ assignment.title }} - Due: {{ assignment.due_date }} 
+        </button>
       </div>
     </div>
 

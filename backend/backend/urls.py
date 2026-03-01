@@ -98,7 +98,7 @@ def get_course_assignments(request, course_id: int):
 @api.post("/courses/{course_id}/assignments", response=ReadAssignment, tags=["Assignments"])
 def create_course_assignment(request, course_id: int, data: CreateAssignment):
     course = request.auth.courses.get(id=course_id)
-    assignment = course.assignments.create(name=data.name, description=data.description)
+    assignment = course.assignments.create(**data.dict(exclude_none=True))
     return assignment
 
 @api.delete("/assignments/{assignment_id}", tags=["Assignments"])

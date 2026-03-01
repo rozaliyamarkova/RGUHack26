@@ -10,8 +10,8 @@ class Assignment(models.Model):
     weighting = models.FloatField(help_text="Weighting of the assignment towards the final grade (e.g., 0.2 for 20%)")
     grade = models.FloatField(help_text="Grade received for the assignment (e.g., 85.5)", null=True, blank=True)
 
-    time_needed = models.IntegerField(help_text="Estimated time needed to complete the assignment in minutes")
-    time_estimated = models.IntegerField(help_text="Estimated time by ai complete the assignment in minutes", null=True, blank=True)
+    time_needed = models.FloatField(help_text="Estimated time needed to complete the assignment in hours")
+    time_estimated = models.FloatField(help_text="Estimated time by ai complete the assignment in hours", null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
