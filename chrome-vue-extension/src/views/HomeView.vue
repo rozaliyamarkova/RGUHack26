@@ -14,6 +14,8 @@ const latitude_ref = ref('')
 const longitude_ref = ref('')
 const selectedCourse = ref(null)
 
+const bustimes = ref([])
+
 const sdr_library_occupancy = ref({})
 
 
@@ -115,6 +117,17 @@ async function getBusStops() {
   }
 }
 
+async function getUpcoming(busStopID) {
+  try {
+    console.log(busStopID);
+    const data = await getRequest(`/bus/${busStopID}`)
+    console.log("hello");
+    console.log(data);
+    bustimes.value = data;
+  } catch (err) {
+    console.error('Error getting upcoming. idk what went wrong twin:', err)
+  }
+}
 
 
 
@@ -140,6 +153,11 @@ navigator.geolocation.getCurrentPosition(
     getBusStops();
   }
 );
+const formatTime = (isoString) => {
+  return new Date(isoString).toLocaleTimeString();
+}
+
+
 </script>
 
 <template>
@@ -216,11 +234,25 @@ navigator.geolocation.getCurrentPosition(
       <div class="input-group">
         <ul class="busstop-list">
           <li v-for="stop in busstops" :key="stop.id" class="stop-item">
-            <button class="btn">{{ stop.common_name }}</button>
+            <!--<button @click="screen = 'stop-timetable'; getUpcoming(stop.id)" class="btn">{{ stop.common_name }}</button>-->
+            <button @click="screen = 'stop-timetable'; getUpcoming(stop.ATCOCode);" class="btn">{{ stop.common_name }}, {{ stop.indicator}}</button>
           </li>
         </ul>
-
       </div>
+      <button @click="screen = 'choice1'" class="btn">Back</button>
     </div>
+
+    <!-- Bus Stop screen -->
+     <div v-else-if="screen === 'stop-timetable'" class="card fade-in">
+      <div class="input-group">
+        <ul class="busstop-busses">
+          <li v-for="bus in bustimes" :key="bus.id" class="bus-item">
+            <button class="btn">{{ bus.line }} | {{ formatTime(bus.departure_time) }}</button>
+          </li>
+        </ul>
+      </div>
+      <button @click="screen = 'bus-timetable'" class="btn">Back</button>
+    </div>
+    
   </div>
 </template>
