@@ -305,11 +305,11 @@ const formatTime = (isoString) => {
   return new Date(isoString).toLocaleTimeString();
 }
 
-const formatBus = (bus) => {
+const getStar = (bus) => {
   if (bus == favourite_bus.value) {
-    return (`${bus.line} | ${formatTime(bus.departure_time)} ★ `)
+    return (`★ `)
   } else {
-    return (`${bus.line} | ${formatTime(bus.departure_time)} ☆ `)
+    return (`☆`)
   }
 }
 
@@ -500,7 +500,7 @@ const format_favourite_bus = () => {
           :class="{ 'bus-card-favourite': bus === favourite_bus.value }" @click="change_favourite(bus)">
           <div class="bus-line">{{ bus.line }}</div>
           <div class="bus-time">{{ formatTime(bus.departure_time) }}</div>
-          <div class="bus-star">{{ bus === favourite_bus.value ? '★' : '☆' }}</div>
+          <div class="bus-star">{{getStar(bus)}}</div>
         </div>
       </div>
       <button @click="screen = 'bus-timetable'" class="btn">Back</button>
