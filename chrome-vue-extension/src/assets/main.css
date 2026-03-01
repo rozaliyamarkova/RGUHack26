@@ -154,3 +154,20 @@ html, body {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Status colors for library occupancy */
+
+.status-not-busy {
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.status-busy {
+  color: #F5A623;
+  font-weight: 500;
+}
+
+.status-very-busy {
+  color: #D04A4A;
+  font-weight: 500;
+}

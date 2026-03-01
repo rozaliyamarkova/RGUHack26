@@ -28,7 +28,7 @@ const favourite_bus_message = ref('')
 
 
 const sdr_library_occupancy = ref({})
-
+const rgu_library_occupancy = ref({})
 
 onMounted(() => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -45,7 +45,9 @@ onMounted(() => {
 
           modules.value = await getRequest('/courses')
           sdr_library_occupancy.value = await getRequest('/libraries/sdr/occupancy')
-  
+
+          rgu_library_occupancy.value = await getRequest('/libraries/rgu/occupancy')
+
         } catch (err) {
           console.error('Error fetching modules:', err)
         }
@@ -64,9 +66,10 @@ onMounted(() => {
 function logEverything() {
   console.log(modules.value)
   console.log(sdr_library_occupancy.value)
+  console.log(rgu_library_occupancy.value)
 }
 
-function saveStudent(data) {  
+function saveStudent(data) {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.sync.set({ userName: data.name, user_id: data.user_id }, () => {
       userName.value = data.name
@@ -291,11 +294,21 @@ const format_favourite_bus = () => {
 
     <!-- RGU Library Occupancy -->
     <div v-else-if="screen === 'rgulib'" class="card fade-in">
-      <h1 class="name">RGU Library Occupancy</h1>
+      <h1 class="name">RGU Library</h1>
       <div class="divider"></div>
+      <div v-for="floor in rgu_library_occupancy.floors" :key="floor.name" class="library-level">
+        <p class="label">{{ floor.name }}</p>
+        <p class="subtitle">
+          {{ floor.current_usage }}/{{ floor.capacity }} people ({{ floor.occupancy_percentage }}%) —
+          <span :class="floor.status === 'Not Busy' ? 'status-not-busy' : floor.status === 'Busy' ? 'status-busy' : 'status-very-busy'">
+            {{ floor.status }}
+          </span>
+        </p>
+      </div>
+      <button @click="screen = 'lib'" class="btn">Back</button>
     </div>
 
-    <!-- ABND Library Occupancy -->
+    <!-- UOA Library Occupancy -->
     <div v-else-if="screen === 'uoalib'" class="card fade-in">
       <h1 class="name">UOA Library Occupancy</h1>
       <div class="divider"></div>
@@ -342,7 +355,8 @@ const format_favourite_bus = () => {
         <ul class="busstop-list">
           <li v-for="stop in busstops" :key="stop.id" class="stop-item">
             <!--<button @click="screen = 'stop-timetable'; getUpcoming(stop.id)" class="btn">{{ stop.common_name }}</button>-->
-            <button @click="screen = 'stop-timetable'; getUpcoming(stop.ATCOCode);" class="btn">{{ stop.common_name }}, {{ stop.indicator}}</button>
+            <button @click="screen = 'stop-timetable'; getUpcoming(stop.ATCOCode);" class="btn">{{ stop.common_name }},
+              {{ stop.indicator }}</button>
           </li>
         </ul>
       </div>
@@ -350,7 +364,7 @@ const format_favourite_bus = () => {
     </div>
 
     <!-- Bus Stop screen -->
-     <div v-else-if="screen === 'stop-timetable'" class="card fade-in">
+    <div v-else-if="screen === 'stop-timetable'" class="card fade-in">
       <div class="input-group">
         <ul class="busstop-busses">
           <li v-for="bus in bustimes" :key="bus.id" class="bus-item">
@@ -364,6 +378,6 @@ const format_favourite_bus = () => {
       </div>
       <button @click="screen = 'bus-timetable'" class="btn">Back</button>
     </div>
-    
+
   </div>
 </template>
