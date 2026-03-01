@@ -54,13 +54,13 @@ onMounted(() => {
         }
       }
     })
-    }
-    chrome.storage.sync.get('favourite_bus', (data) => {
-  if (data.favourite_bus) {
-    favourite_bus.value = data.favourite_bus;
-    format_favourite_bus();
   }
-})
+  chrome.storage.sync.get('favourite_bus', (data) => {
+    if (data.favourite_bus) {
+      favourite_bus.value = data.favourite_bus;
+      format_favourite_bus();
+    }
+  })
 }
 )
 
@@ -182,18 +182,19 @@ async function addAssignment() {
     weighting: float|None = None
     grade: float|None = No
     */
-    const data = await postRequest(`/courses/${selectedCourse.value.id}/assignments`, { title: newAssignmentName.value,
-        due_date: newAssignmentDueDate.value,
-        time_needed: newAssignmentTimeNeeded.value,
-        weighting: newAssignmentWeighting.value || null,
-        grade: newAssignmentGrade.value || null,
-     })
+    const data = await postRequest(`/courses/${selectedCourse.value.id}/assignments`, {
+      title: newAssignmentName.value,
+      due_date: newAssignmentDueDate.value,
+      time_needed: newAssignmentTimeNeeded.value,
+      weighting: newAssignmentWeighting.value || null,
+      grade: newAssignmentGrade.value || null,
+    })
     console.log('Assignment added:', data)
     newAssignmentName.value = ''
-      newAssignmentDueDate.value = ''
-      newAssignmentTimeNeeded.value = ''
-      newAssignmentWeighting.value = ''
-      newAssignmentGrade.value = ''
+    newAssignmentDueDate.value = ''
+    newAssignmentTimeNeeded.value = ''
+    newAssignmentWeighting.value = ''
+    newAssignmentGrade.value = ''
     selectedCourseAssignments.value.push(data)
   } catch (err) {
     console.error('Error adding assignment:', err)
@@ -261,7 +262,7 @@ async function change_favourite(bus) {
     console.log(`${bus.line} | ${formatTime(bus.departure_time)} ★ `);
     saveFavourite(favourite_bus);
     return (`${bus.line} | ${formatTime(bus.departure_time)} ★ `)
-  } catch(err) {
+  } catch (err) {
     console.error('Something went front with changing favourite bus', err);
   }
 }
@@ -307,7 +308,7 @@ const format_favourite_bus = () => {
   if (favourite_bus) {
     console.log(favourite_bus.value);
     console.log(favourite_bus.value.departure_time);
-    let bus_departure_date = new Date (favourite_bus.value.departure_time);
+    let bus_departure_date = new Date(favourite_bus.value.departure_time);
     let js_bullshit = new Date;
     let current_time = js_bullshit.getTime();
 
@@ -318,7 +319,7 @@ const format_favourite_bus = () => {
   } else {
     return ``
   }
-  }
+}
 
 
 </script>
@@ -349,7 +350,7 @@ const format_favourite_bus = () => {
 
     <!-- Library Choice -->
     <div v-else-if="screen === 'lib'" class="card fade-in">
-      <h1 class="name">Select a library to check occupancy</h1>
+      <h1 class="name">Choose your fighter!</h1>
       <div class="divider"></div>
       <div class="input-group">
         <button @click="screen = 'uoalib'" class="btn">UOA Library</button>
@@ -360,13 +361,14 @@ const format_favourite_bus = () => {
 
     <!-- RGU Library Occupancy -->
     <div v-else-if="screen === 'rgulib'" class="card fade-in">
-      <h1 class="name">RGU Library</h1>
+      <h1 class="name">RGU Library Occupancy</h1>
       <div class="divider"></div>
       <div v-for="floor in rgu_library_occupancy.floors" :key="floor.name" class="library-level">
         <p class="label">{{ floor.name }}</p>
         <p class="subtitle">
           {{ floor.current_usage }}/{{ floor.capacity }} people ({{ floor.occupancy_percentage }}%) —
-          <span :class="floor.status === 'Not Busy' ? 'status-not-busy' : floor.status === 'Busy' ? 'status-busy' : 'status-very-busy'">
+          <span
+            :class="floor.status === 'Not Busy' ? 'status-not-busy' : floor.status === 'Busy' ? 'status-busy' : 'status-very-busy'">
             {{ floor.status }}
           </span>
         </p>
@@ -378,10 +380,16 @@ const format_favourite_bus = () => {
     <div v-else-if="screen === 'uoalib'" class="card fade-in">
       <h1 class="name">UOA Library Occupancy</h1>
       <div class="divider"></div>
-      <div>
-        <p>Current occupancy: {{ sdr_library_occupancy.occupancy_percentage }}%</p>
-        <button @click="screen = 'lib'" class="btn">Back</button>
+      <div class="library-level">
+        <p class="subtitle">
+          {{ sdr_library_occupancy.occupancy_percentage }}% —
+          <span
+            :class="sdr_library_occupancy.occupancy_percentage < 50 ? 'status-not-busy' : sdr_library_occupancy.occupancy_percentage < 80 ? 'status-busy' : 'status-very-busy'">
+            {{ sdr_library_occupancy.occupancy_percentage < 50 ? 'Not Busy' : sdr_library_occupancy.occupancy_percentage
+              < 80 ? 'Busy' : 'Very Busy' }} </span>
+        </p>
       </div>
+      <button @click="screen = 'lib'" class="btn">Back</button>
     </div>
 
     <!-- Modules screen -->
@@ -403,12 +411,12 @@ const format_favourite_bus = () => {
         <button @click="screen = 'modules'" class="btn">Back</button>
         <div v-if="courseStats">
 
-            <p v-if="courseStats.weightedAverage">Average: {{ courseStats.weightedAverage }}%</p>
-            <p v-else>No grades yet</p>
-            <p>{{ courseStats.gradedPercent }}% / {{ courseStats.totalPercent }}% graded</p>
-            <p v-if="courseStats.overallTotal">Running total: {{ courseStats.overallTotal }}%</p>
-            <br />
-            <p>{{ courseStats.totalHours }}h total work, {{ courseStats.remaining }} assignments remaining</p>
+          <p v-if="courseStats.weightedAverage">Average: {{ courseStats.weightedAverage }}%</p>
+          <p v-else>No grades yet</p>
+          <p>{{ courseStats.gradedPercent }}% / {{ courseStats.totalPercent }}% graded</p>
+          <p v-if="courseStats.overallTotal">Running total: {{ courseStats.overallTotal }}%</p>
+          <br />
+          <p>{{ courseStats.totalHours }}h total work, {{ courseStats.remaining }} assignments remaining</p>
         </div>
         <div v-if="procrastination">
           <strong>Procrastination Timer</strong><br />
@@ -420,15 +428,12 @@ const format_favourite_bus = () => {
         <input v-model="newAssignmentName" type="text" placeholder="Assignment name..." class="input" />
         <input v-model="newAssignmentDueDate" type="date" class="input" />
         <input v-model="newAssignmentTimeNeeded" type="number" placeholder="Time needed (hours)..." class="input" />
-        <input v-model="newAssignmentWeighting" type="number" step="0.01" placeholder="Weighting (0-1)..." class="input" />
+        <input v-model="newAssignmentWeighting" type="number" step="0.01" placeholder="Weighting (0-1)..."
+          class="input" />
         <input v-model="newAssignmentGrade" type="number" step="0.01" placeholder="Grade (0-1)..." class="input" />
         <button class="btn" @click="addAssignment">Add Assignment</button>
 
-        <div
-          v-for="assignment in selectedCourseAssignments"
-          :key="assignment.id"
-          @click="openAssignment(assignment)"
-        >
+        <div v-for="assignment in selectedCourseAssignments" :key="assignment.id" @click="openAssignment(assignment)">
           <strong>{{ assignment.title }}</strong>
           <span v-if="assignment.weighting"> : {{ (assignment.weighting * 100).toFixed(0) }}%</span>
           <br />
@@ -450,7 +455,8 @@ const format_favourite_bus = () => {
         <input v-model="selectedAssignment.title" type="text" placeholder="Title" class="input" />
         <input v-model="selectedAssignment.due_date" type="date" class="input" />
         <input v-model="selectedAssignment.time_needed" type="number" placeholder="Time needed (hours)" class="input" />
-        <input v-model="selectedAssignment.weighting" type="number" step="0.01" placeholder="Weighting (0-1)" class="input" />
+        <input v-model="selectedAssignment.weighting" type="number" step="0.01" placeholder="Weighting (0-1)"
+          class="input" />
         <input v-model="selectedAssignment.grade" type="number" step="0.01" placeholder="Grade (0-1)" class="input" />
         <button class="btn" @click="updateAssignment">Save</button>
       </div>
@@ -476,10 +482,10 @@ const format_favourite_bus = () => {
         <ul class="busstop-busses">
           <li v-for="bus in bustimes" :key="bus.id" class="bus-item">
             <!-- <button class="btn">{{ bus.line }} | {{ formatTime(bus.departure_time) }} ☆ </button> -->
-            
 
-            <button @click="change_favourite(bus);" class="btn">{{formatBus(bus)}} </button>
-              <!-- ★ -->
+
+            <button @click="change_favourite(bus);" class="btn">{{ formatBus(bus) }} </button>
+            <!-- ★ -->
           </li>
         </ul>
       </div>
