@@ -151,7 +151,10 @@ const procrastination = computed(() => {
 })
 
 async function openAssignment(assignment) {
-  selectedAssignment.value = { ...assignment }
+  selectedAssignment.value = {
+    ...assignment,
+    due_date: assignment.due_date ? assignment.due_date.split('T')[0] : '',
+  }
   screen.value = 'assignment'
 }
 
