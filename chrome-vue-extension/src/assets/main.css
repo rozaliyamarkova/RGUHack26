@@ -239,3 +239,31 @@ html, body {
   border-color: #C8A96E;
   background: #FDF8F0;
 }
+
+/* Delete button */
+
+.module-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.module-btn {
+  flex: 1;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background 0.2s;
+  color: #D04A4A;
+}
+
+.delete-btn:hover {
+  background: #fde8e8;
+}

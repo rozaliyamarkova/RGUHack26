@@ -99,7 +99,14 @@ async function openCourse(course) {
   selectedCourseAssignments.value = assignments
 }
 
-
+async function deleteModule(course) {
+  try {
+    await deleteRequest(`/courses/${course.id}`)
+    modules.value = modules.value.filter(m => m.id !== course.id)
+  } catch (err) {
+    console.error('Error deleting module:', err)
+  }
+}
 
 const courseStats = computed(() => {
   const assignments = selectedCourseAssignments.value
@@ -401,9 +408,12 @@ const format_favourite_bus = () => {
         <button @click="screen = 'choice1'; format_favourite_bus();" class="btn">Back</button>
         <input v-model="newModuleName" type="text" placeholder="Enter module name..." class="input" />
         <button class="btn" @click="addModule">Add Module</button>
-        <button v-for="course in modules" :key="course.id" class="btn" @click="openCourse(course)">
-          {{ course.name }}
-        </button>
+        <div v-for="course in modules" :key="course.id" class="module-row">
+          <button class="btn module-btn" @click="openCourse(course)">
+            {{ course.name }}
+          </button>
+          <button class="delete-btn" @click.stop="deleteModule(course)">✕</button>
+        </div>
       </div>
     </div>
 
