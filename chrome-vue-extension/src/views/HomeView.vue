@@ -200,7 +200,6 @@ navigator.geolocation.getCurrentPosition(
     <div v-else-if="screen === 'bus-timetable'" class="card fade-in">
       <div class="input-group">
         <div id="tester"> {{ latitude_ref }} </div>
-
       </div>
     </div>
   </div>
