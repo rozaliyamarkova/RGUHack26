@@ -83,7 +83,6 @@ function saveStudent(data) {
   }
 }
 
-
 function saveFavourite(bus) {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.sync.set({ favourite_bus: bus.value }, () => {
@@ -91,7 +90,6 @@ function saveFavourite(bus) {
     })
   }
 }
-
 
 
 async function openCourse(course) {
