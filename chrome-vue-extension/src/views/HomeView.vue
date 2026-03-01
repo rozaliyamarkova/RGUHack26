@@ -12,6 +12,9 @@ const modules = ref([])
 const latitude_ref = ref('')
 const longitude_ref = ref('')
 
+const sdr_library_occupancy = ref({})
+
+
 onMounted(() => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
     chrome.storage.sync.get('userName', (data) => {
@@ -26,6 +29,7 @@ onMounted(() => {
         try {
 
           modules.value = await getRequest('/courses')
+          sdr_library_occupancy.value = await getRequest('/libraries/sdr/occupancy')
   
         } catch (err) {
           console.error('Error fetching modules:', err)
@@ -37,6 +41,7 @@ onMounted(() => {
 
 function logEverything() {
   console.log(modules.value)
+  console.log(sdr_library_occupancy.value)
 }
 
 function saveStudent(data) {  
@@ -161,8 +166,12 @@ navigator.geolocation.getCurrentPosition(
 
     <!-- ABND Library Occupancy -->
     <div v-else-if="screen === 'abdnlib'" class="card fade-in">
-      <h1 class="name">ABDN Library Occupancy</h1>
+      <h1 class="name">UOA Library Occupancy</h1>
       <div class="divider"></div>
+      <div>
+        <p>Current occupancy: {{ sdr_library_occupancy.occupancy_percentage }}%</p>
+        <button @click="logEverything" class="btn">Log Occupancy Data</button>
+      </div>
     </div>
 
     <!-- Modules screen -->
