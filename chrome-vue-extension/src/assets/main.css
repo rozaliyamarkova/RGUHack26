@@ -155,7 +155,7 @@ html, body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Status colors for library occupancy */
+/* Status colours for library occupancy */
 
 .status-not-busy {
   color: #4CAF50;
@@ -170,4 +170,72 @@ html, body {
 .status-very-busy {
   color: #D04A4A;
   font-weight: 500;
+}
+
+/* Bus stops colours*/
+.stop-list,
+.bus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.stop-card,
+.bus-card {
+  background: #FAFAF8;
+  border: 1.5px solid #E5E0D8;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.stop-card:hover,
+.bus-card:hover {
+  background: #F0EDE8;
+}
+
+.stop-card-inner,
+.bus-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stop-indicator,
+.bus-line {
+  background: #1C1C1E;
+  color: #F5F2EE;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: center;
+}
+
+.stop-name,
+.bus-time {
+  flex: 1;
+  font-size: 14px;
+  color: #1C1C1E;
+  font-weight: 500;
+  text-align: left;
+}
+
+.stop-arrow {
+  color: #BBBAB5;
+  font-size: 14px;
+}
+
+.bus-star {
+  color: #C8A96E;
+  font-size: 18px;
+}
+
+.bus-card-favourite {
+  border-color: #C8A96E;
+  background: #FDF8F0;
 }

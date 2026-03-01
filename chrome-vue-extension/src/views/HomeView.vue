@@ -464,30 +464,31 @@ const format_favourite_bus = () => {
 
     <!-- Bus Timetable screen -->
     <div v-else-if="screen === 'bus-timetable'" class="card fade-in">
-      <div class="input-group">
-        <ul class="busstop-list">
-          <li v-for="stop in busstops" :key="stop.id" class="stop-item">
-            <!--<button @click="screen = 'stop-timetable'; getUpcoming(stop.id)" class="btn">{{ stop.common_name }}</button>-->
-            <button @click="screen = 'stop-timetable'; getUpcoming(stop.ATCOCode);" class="btn">{{ stop.common_name }},
-              {{ stop.indicator }}</button>
-          </li>
-        </ul>
+      <h1 class="name">Stops Close to You</h1>
+      <div class="divider"></div>
+      <div class="stop-list">
+        <div v-for="stop in busstops" :key="stop.id" class="stop-card"
+          @click="screen = 'stop-timetable'; getUpcoming(stop.ATCOCode)">
+          <div class="stop-card-inner">
+            <div class="stop-indicator">{{ stop.indicator }}</div>
+            <div class="stop-name">{{ stop.common_name }}</div>
+          </div>
+        </div>
       </div>
       <button @click="screen = 'choice1'; format_favourite_bus();" class="btn">Back</button>
     </div>
 
     <!-- Bus Stop screen -->
     <div v-else-if="screen === 'stop-timetable'" class="card fade-in">
-      <div class="input-group">
-        <ul class="busstop-busses">
-          <li v-for="bus in bustimes" :key="bus.id" class="bus-item">
-            <!-- <button class="btn">{{ bus.line }} | {{ formatTime(bus.departure_time) }} ☆ </button> -->
-
-
-            <button @click="change_favourite(bus);" class="btn">{{ formatBus(bus) }} </button>
-            <!-- ★ -->
-          </li>
-        </ul>
+      <h1 class="name">Bus Times</h1>
+      <div class="divider"></div>
+      <div class="bus-list">
+        <div v-for="bus in bustimes" :key="bus.id" class="bus-card"
+          :class="{ 'bus-card-favourite': bus === favourite_bus.value }" @click="change_favourite(bus)">
+          <div class="bus-line">{{ bus.line }}</div>
+          <div class="bus-time">{{ formatTime(bus.departure_time) }}</div>
+          <div class="bus-star">{{ bus === favourite_bus.value ? '★' : '☆' }}</div>
+        </div>
       </div>
       <button @click="screen = 'bus-timetable'" class="btn">Back</button>
     </div>
