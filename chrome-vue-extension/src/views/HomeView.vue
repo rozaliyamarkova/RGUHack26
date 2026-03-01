@@ -9,6 +9,8 @@ const error = ref('')
 const screen = ref('name')
 
 const modules = ref([])
+
+const busstops = ref([])
 const latitude_ref = ref('')
 const longitude_ref = ref('')
 
@@ -93,6 +95,16 @@ async function addModule() {
   }
 }
 
+async function getBusStops() {
+  try {
+    const data = await getRequest(`/closest_busses?longitude=${longitude_ref.value}&latitude=${latitude_ref.value}`)
+    console.log(data);
+    busstops.value = data;
+  } catch (err) {
+    console.error('Error getting busstops. idk what went wrong twin:', err)
+  }
+}
+
 
 
 
@@ -101,8 +113,7 @@ const generateDMS = (coords, isLat) => {
   const deg = Math.floor(absCoords);
   const min = Math.floor((absCoords - deg) * 60);
   const sec = ((absCoords - deg - min / 60) * 3600).toFixed(1);
-  const direction = coords >= 0 ? (isLat ? 'N' : 'E') : isLat ? 'S' : 'W';
-  console.log('hello');
+  const direction = coords >= 0 ? (isLat ? 'N' : 'E') : isLat ? 'S' : 'W';;
   return `${deg}°${min}'${sec}"${direction}`;
 };
 
@@ -116,6 +127,7 @@ navigator.geolocation.getCurrentPosition(
 
 
     console.log(`position: ${latitude_ref.value}, ${longitude_ref.value}`);
+    getBusStops();
   }
 );
 </script>
@@ -185,7 +197,11 @@ navigator.geolocation.getCurrentPosition(
     <!-- Bus Timetable screen -->
     <div v-else-if="screen === 'bus-timetable'" class="card fade-in">
       <div class="input-group">
-        <div id="tester"> {{latitude_ref}} </div>
+        <ul class="busstop-list">
+          <li v-for="stop in busstops" :key="stop.id" class="stop-item">
+            <button class="btn">{{ stop.common_name }}</button>
+          </li>
+        </ul>
 
       </div>
     </div>

@@ -119,13 +119,12 @@ def get_assignment_logs(request, assignment_id:int):
     logs = assignment.logs.all()
     return logs
 
-@api.get("/closest_busses", response=List[ReadBusStop],tags=["Busses"])
-def status(request):
-    return find_closest_bus_stops("""57Â°7'7.2"N""", """2Â°8'4.3"W""")
+@api.get("/closest_busses", response=List[ReadBusStop],tags=["Busses"], auth=None)
+def status(request, longitude, latitude):
+    return find_closest_bus_stops(latitude, longitude)
 
-@api.get("/bus/{stop_id}", response=List[Bus])
-def bus_api(request, stop_id):
-    global daily_bus_request_count
+@api.get("/bus/{stop_id}", response=List[Bus], auth=None)
+def bus_api(request, stop_id):  
     all_buses = []
 
     stop_data = fetch_from_traveline_api(stop_id, settings.BUS_API_USERNAME, settings.BUS_API_PASSWORD)
