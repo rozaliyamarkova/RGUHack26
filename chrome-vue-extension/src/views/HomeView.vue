@@ -17,6 +17,7 @@ const selectedCourse = ref(null)
 const bustimes = ref([])
 
 const favourite_bus = ref('')
+const favourite_bus_message = ref('')
 
 
 const sdr_library_occupancy = ref({})
@@ -43,8 +44,15 @@ onMounted(() => {
         }
       }
     })
+    }
+    chrome.storage.sync.get('favourite_bus', (data) => {
+  if (data.favourite_bus) {
+    favourite_bus.value = data.favourite_bus;
+    format_favourite_bus();
   }
 })
+}
+)
 
 function logEverything() {
   console.log(modules.value)
@@ -63,6 +71,15 @@ function saveStudent(data) {
     screen.value = 'choice1'
   }
 }
+
+function saveFavourite(bus) {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.sync.set({ favourite_bus: bus.value }, () => {
+      console.log('Favourite bus saved:', bus.value)
+    })
+  }
+}
+
 
 function getUserIdToken() {
   return new Promise((resolve) => {
@@ -136,9 +153,10 @@ async function change_favourite(bus) {
   try {
     favourite_bus.value = bus;
     console.log(`${bus.line} | ${formatTime(bus.departure_time)} ★ `);
+    saveFavourite(favourite_bus);
     return (`${bus.line} | ${formatTime(bus.departure_time)} ★ `)
   } catch(err) {
-    console.error('Something went front with changing favourite bus')
+    console.error('Something went front with changing favourite bus', err);
   }
 }
 
@@ -176,19 +194,24 @@ const formatBus = (bus) => {
   } else {
     return (`${bus.line} | ${formatTime(bus.departure_time)} ☆ `)
   }
-
-  const format_favourite_bus = () => {
-    if favourite_bus {
-      bus_departure_date = new Date (favourite_bus.value.departure_time)
-      current_time = Date.now()
-
-      difference = bus_departure_date - current_time;
-      console.log(difference);
-    } else {
-      return ``
-    }
-  }
 }
+
+const format_favourite_bus = () => {
+  if (favourite_bus) {
+    console.log(favourite_bus.value);
+    console.log(favourite_bus.value.departure_time);
+    let bus_departure_date = new Date (favourite_bus.value.departure_time);
+    let js_bullshit = new Date;
+    let current_time = js_bullshit.getTime();
+
+    let difference = bus_departure_date - current_time;
+    difference = (Math.round(difference / 60000));
+
+    favourite_bus_message.value = `Your bus will be at your stop in ${difference} minutes :)`;
+  } else {
+    return ``
+  }
+  }
 
 
 </script>
@@ -246,7 +269,7 @@ const formatBus = (bus) => {
     <!-- Modules screen -->
     <div v-else-if="screen === 'modules'" class="card fade-in">
       <div class="input-group">
-        <button @click="screen = 'choice1'" class="btn">Back</button>
+        <button @click="screen = 'choice1'; format_favourite_bus();" class="btn">Back</button>
         <input v-model="newModuleName" type="text" placeholder="Enter module name..." class="input" />
         <button class="btn" @click="addModule">Add Module</button>
         <button v-for="course in modules" :key="course.id" class="btn" @click="openCourse(course)">
@@ -273,7 +296,7 @@ const formatBus = (bus) => {
           </li>
         </ul>
       </div>
-      <button @click="screen = 'choice1'" class="btn">Back</button>
+      <button @click="screen = 'choice1'; format_favourite_bus();" class="btn">Back</button>
     </div>
 
     <!-- Bus Stop screen -->

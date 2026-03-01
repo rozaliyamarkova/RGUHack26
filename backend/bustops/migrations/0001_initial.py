@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             name='BusStop',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ATCOCode', models.CharField(max_length=255)),
+                ('ATCOCode', models.CharField(max_length=8)),
                 ('common_name', models.CharField(max_length=255)),
                 ('indicator', models.CharField(max_length=255)),
                 ('latitude', models.CharField(max_length=255)),
