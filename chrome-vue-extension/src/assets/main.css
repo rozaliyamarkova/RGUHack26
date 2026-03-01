@@ -114,6 +114,11 @@ html, body {
   transition: background 0.2s, transform 0.1s;
 }
 
+.btn.is-light {
+  background: #C8A96E;
+  color: #F5F2EE;
+}
+
 .btn:hover {
   background: #2E2E30;
 }

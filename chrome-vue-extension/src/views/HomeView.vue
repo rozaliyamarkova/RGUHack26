@@ -7,12 +7,15 @@ const nameInput = ref('')
 const userName = ref('')
 const error = ref('')
 const screen = ref('name')
-
 const modules = ref([])
 
 const busstops = ref([])
 const latitude_ref = ref('')
 const longitude_ref = ref('')
+const selectedCourse = ref(null)
+
+const sdr_library_occupancy = ref({})
+
 
 onMounted(() => {
   if (typeof chrome !== 'undefined' && chrome.storage) {
@@ -28,6 +31,7 @@ onMounted(() => {
         try {
 
           modules.value = await getRequest('/courses')
+          sdr_library_occupancy.value = await getRequest('/libraries/sdr/occupancy')
   
         } catch (err) {
           console.error('Error fetching modules:', err)
@@ -39,6 +43,7 @@ onMounted(() => {
 
 function logEverything() {
   console.log(modules.value)
+  console.log(sdr_library_occupancy.value)
 }
 
 function saveStudent(data) {  
@@ -60,6 +65,11 @@ function getUserIdToken() {
       resolve(data.user_id)
     })
   })
+}
+
+function openCourse(course) {
+  selectedCourse.value = course
+  screen.value = 'course'
 }
 
 async function registerStudent() {
@@ -121,7 +131,7 @@ navigator.geolocation.getCurrentPosition(
   (loc) => {
     const { coords } = loc;
     console.log(loc);
-    let {latitude, longitude} = coords;
+    let { latitude, longitude } = coords;
     latitude_ref.value = latitude;
     longitude_ref.value = longitude;
 
@@ -160,7 +170,7 @@ navigator.geolocation.getCurrentPosition(
       <h1 class="name">Select a library to check occupancy</h1>
       <div class="divider"></div>
       <div class="input-group">
-        <button @click="screen = 'abdnlib'" class="btn">UOA Library</button>
+        <button @click="screen = 'uoalib'" class="btn">UOA Library</button>
         <button @click="screen = 'rgulib'" class="btn">RGU Library</button>
       </div>
     </div>
@@ -172,25 +182,32 @@ navigator.geolocation.getCurrentPosition(
     </div>
 
     <!-- ABND Library Occupancy -->
-    <div v-else-if="screen === 'abdnlib'" class="card fade-in">
-      <h1 class="name">ABDN Library Occupancy</h1>
+    <div v-else-if="screen === 'uoalib'" class="card fade-in">
+      <h1 class="name">UOA Library Occupancy</h1>
       <div class="divider"></div>
+      <div>
+        <p>Current occupancy: {{ sdr_library_occupancy.occupancy_percentage }}%</p>
+        <button @click="logEverything" class="btn">Log Occupancy Data</button>
+      </div>
     </div>
 
     <!-- Modules screen -->
     <div v-else-if="screen === 'modules'" class="card fade-in">
       <div class="input-group">
-        <button @click="screen = 'assignments'" class="btn">Assignments</button>
-        <button @click="screen = 'notes'" class="btn">Notes</button>
         <button @click="screen = 'choice1'" class="btn">Back</button>
-
-        <input v-model="newModuleName" type="text" placeholder="Enter name..." class="input" />
+        <input v-model="newModuleName" type="text" placeholder="Enter module name..." class="input" />
         <button class="btn" @click="addModule">Add Module</button>
-        <ul class="module-list">
-          <li v-for="course in modules" :key="course.id" class="module-item">
-            <button class="btn">{{ course.name }}</button>
-          </li>
-        </ul>
+        <button v-for="course in modules" :key="course.id" class="btn" @click="openCourse(course)">
+          {{ course.name }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Specific module screen -->
+    <div v-else-if="screen === 'course'" class="card fade-in">
+      <div class="input-group">
+        <h1 class="name">{{ selectedCourse.name }}</h1>
+        <button @click="screen = 'modules'" class="btn">Back</button>
       </div>
     </div>
 
