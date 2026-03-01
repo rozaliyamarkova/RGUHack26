@@ -16,6 +16,9 @@ const selectedCourse = ref(null)
 
 const bustimes = ref([])
 
+const favourite_bus = ref('')
+
+
 const sdr_library_occupancy = ref({})
 
 
@@ -129,6 +132,16 @@ async function getUpcoming(busStopID) {
   }
 }
 
+async function change_favourite(bus) {
+  try {
+    favourite_bus.value = bus;
+    console.log(`${bus.line} | ${formatTime(bus.departure_time)} ★ `);
+    return (`${bus.line} | ${formatTime(bus.departure_time)} ★ `)
+  } catch(err) {
+    console.error('Something went front with changing favourite bus')
+  }
+}
+
 
 
 const generateDMS = (coords, isLat) => {
@@ -157,6 +170,26 @@ const formatTime = (isoString) => {
   return new Date(isoString).toLocaleTimeString();
 }
 
+const formatBus = (bus) => {
+  if (bus == favourite_bus.value) {
+    return (`${bus.line} | ${formatTime(bus.departure_time)} ★ `)
+  } else {
+    return (`${bus.line} | ${formatTime(bus.departure_time)} ☆ `)
+  }
+
+  const format_favourite_bus = () => {
+    if favourite_bus {
+      bus_departure_date = new Date (favourite_bus.value.departure_time)
+      current_time = Date.now()
+
+      difference = bus_departure_date - current_time;
+      console.log(difference);
+    } else {
+      return ``
+    }
+  }
+}
+
 
 </script>
 
@@ -175,6 +208,7 @@ const formatTime = (isoString) => {
     <!-- Modules / Bus Timetables-->
     <div v-else-if="screen === 'choice1'" class="card fade-in">
       <h1 class="name">Hello {{ userName }}!</h1>
+      <div> {{ favourite_bus_message }} </div>
       <div class="divider"></div>
       <div class="input-group">
         <button @click="screen = 'modules'" class="btn">Modules</button>
@@ -247,7 +281,11 @@ const formatTime = (isoString) => {
       <div class="input-group">
         <ul class="busstop-busses">
           <li v-for="bus in bustimes" :key="bus.id" class="bus-item">
-            <button class="btn">{{ bus.line }} | {{ formatTime(bus.departure_time) }}</button>
+            <!-- <button class="btn">{{ bus.line }} | {{ formatTime(bus.departure_time) }} ☆ </button> -->
+            
+
+            <button @click="change_favourite(bus);" class="btn">{{formatBus(bus)}} </button>
+              <!-- ★ -->
           </li>
         </ul>
       </div>
