@@ -8,9 +8,13 @@ const userName = ref('')
 const error = ref('')
 const screen = ref('name')
 const modules = ref([])
+
+const busstops = ref([])
 const latitude_ref = ref('')
 const longitude_ref = ref('')
 const selectedCourse = ref(null)
+
+const bustimes = ref([])
 
 const sdr_library_occupancy = ref({})
 
@@ -103,13 +107,36 @@ async function addModule() {
   }
 }
 
+async function getBusStops() {
+  try {
+    const data = await getRequest(`/closest_busses?longitude=${longitude_ref.value}&latitude=${latitude_ref.value}`)
+    console.log(data);
+    busstops.value = data;
+  } catch (err) {
+    console.error('Error getting busstops. idk what went wrong twin:', err)
+  }
+}
+
+async function getUpcoming(busStopID) {
+  try {
+    console.log(busStopID);
+    const data = await getRequest(`/bus/${busStopID}`)
+    console.log("hello");
+    console.log(data);
+    bustimes.value = data;
+  } catch (err) {
+    console.error('Error getting upcoming. idk what went wrong twin:', err)
+  }
+}
+
+
+
 const generateDMS = (coords, isLat) => {
   const absCoords = Math.abs(coords);
   const deg = Math.floor(absCoords);
   const min = Math.floor((absCoords - deg) * 60);
   const sec = ((absCoords - deg - min / 60) * 3600).toFixed(1);
-  const direction = coords >= 0 ? (isLat ? 'N' : 'E') : isLat ? 'S' : 'W';
-  console.log('hello');
+  const direction = coords >= 0 ? (isLat ? 'N' : 'E') : isLat ? 'S' : 'W';;
   return `${deg}°${min}'${sec}"${direction}`;
 };
 
@@ -123,8 +150,14 @@ navigator.geolocation.getCurrentPosition(
 
 
     console.log(`position: ${latitude_ref.value}, ${longitude_ref.value}`);
+    getBusStops();
   }
 );
+const formatTime = (isoString) => {
+  return new Date(isoString).toLocaleTimeString();
+}
+
+
 </script>
 
 <template>
@@ -199,8 +232,27 @@ navigator.geolocation.getCurrentPosition(
     <!-- Bus Timetable screen -->
     <div v-else-if="screen === 'bus-timetable'" class="card fade-in">
       <div class="input-group">
-        <div id="tester"> {{ latitude_ref }} </div>
+        <ul class="busstop-list">
+          <li v-for="stop in busstops" :key="stop.id" class="stop-item">
+            <!--<button @click="screen = 'stop-timetable'; getUpcoming(stop.id)" class="btn">{{ stop.common_name }}</button>-->
+            <button @click="screen = 'stop-timetable'; getUpcoming(stop.ATCOCode);" class="btn">{{ stop.common_name }}, {{ stop.indicator}}</button>
+          </li>
+        </ul>
       </div>
+      <button @click="screen = 'choice1'" class="btn">Back</button>
     </div>
+
+    <!-- Bus Stop screen -->
+     <div v-else-if="screen === 'stop-timetable'" class="card fade-in">
+      <div class="input-group">
+        <ul class="busstop-busses">
+          <li v-for="bus in bustimes" :key="bus.id" class="bus-item">
+            <button class="btn">{{ bus.line }} | {{ formatTime(bus.departure_time) }}</button>
+          </li>
+        </ul>
+      </div>
+      <button @click="screen = 'bus-timetable'" class="btn">Back</button>
+    </div>
+    
   </div>
 </template>

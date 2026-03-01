@@ -116,8 +116,20 @@ def parse_bus_response(xml_string):
         
         # Sort by departure time
         departures.sort(key=lambda x: x['departure_time'])
+
+
         
     except Exception as e:
         print(f"Error parsing bus data XML: {e}")
-    
+
+    if len(departures) == 0:
+        departures.append({
+                    'line': "NO BUSSES PLANED",
+                    'direction': "",
+                    'operator': "",
+                    'scheduled_time': "",
+                    'departure_time': "",
+                    'is_realtime': ""
+                })
+
     return departures

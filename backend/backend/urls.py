@@ -120,6 +120,10 @@ def get_assignment_logs(request, assignment_id:int):
     logs = assignment.logs.all()
     return logs
 
+@api.get("/closest_busses", response=List[ReadBusStop],tags=["Busses"], auth=None)
+def status(request, longitude, latitude):
+    return find_closest_bus_stops(latitude, longitude)
+ 
 @api.get("/libraries/{library_slug}/occupancy",  auth=None, tags=["Libraries"])
 def get_library_occupancy(request, library_slug: str):
     occupancy_data = get_library_occupancy_helper(library_slug)
@@ -128,15 +132,15 @@ def get_library_occupancy(request, library_slug: str):
     else:
         return {"error": "Library not found"}, 404
 
-@api.get("/closest_busses", response=List[ReadBusStop],tags=["Busses"])
+@api.get("/closest_busses", response=List[ReadBusStop],tags=["Busses"], auth=None)
 def status(request):
     return find_closest_bus_stops("""57Â°7'7.2"N""", """2Â°8'4.3"W""")
 
-@api.get("/bus/{stop_id}",response=List[Bus])
+@api.get("/bus/{stop_id}",response=List[Bus], auth=None)
 def bus_api(request, stop_id):
-    global daily_bus_request_count
     all_buses = []
-
+    stop_id = stop_id[0:8]
+    print(stop_id)
     stop_data = fetch_from_traveline_api(stop_id, settings.BUS_API_USERNAME, settings.BUS_API_PASSWORD)
     print(stop_data)
     
