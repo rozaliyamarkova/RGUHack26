@@ -14,4 +14,5 @@ backend/db.sqlite3
 /backend/backend/__pycache__
 backend/backend/__pycache__/settings.cpython-313.pyc
 *.pyc
-
+*.env
+backend/backend/env
