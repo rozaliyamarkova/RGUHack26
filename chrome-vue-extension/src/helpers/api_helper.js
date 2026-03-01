@@ -42,6 +42,21 @@ export async function postRequest(path, payload) {
     }
 }
 
+export async function putRequest(path, payload) {  
+    try {
+        const response = await fetch(`${BASE_URL}${path}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${await getUserIdToken()}` },
+            body: JSON.stringify(payload)
+        })
+
+        const data = await response.json()
+        return data
+    } catch (err) {
+        console.error(err)
+    }
+}
+
 export async function deleteRequest(path) {
     try {
         const response = await fetch(`${BASE_URL}${path}`, {
