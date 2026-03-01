@@ -176,9 +176,10 @@ const formatBus = (bus) => {
   } else {
     return (`${bus.line} | ${formatTime(bus.departure_time)} ☆ `)
   }
+}
 
-  const format_favourite_bus = () => {
-    if favourite_bus {
+const format_favourite_bus = () => {
+    if (favourite_bus) {
       bus_departure_date = new Date (favourite_bus.value.departure_time)
       current_time = Date.now()
 
@@ -188,7 +189,6 @@ const formatBus = (bus) => {
       return ``
     }
   }
-}
 
 
 </script>
