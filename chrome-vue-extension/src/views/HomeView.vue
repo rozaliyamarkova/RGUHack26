@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getRequest, postRequest } from '../helpers/api_helper'
+import { ref, onMounted, computed } from 'vue'
+import { getRequest, postRequest, putRequest, deleteRequest } from '../helpers/api_helper'
 
 const newModuleName = ref('')
 const nameInput = ref('')
@@ -14,6 +14,7 @@ const latitude_ref = ref('')
 const longitude_ref = ref('')
 const selectedCourse = ref(null)
 const selectedCourseAssignments = ref([])
+const selectedAssignment = ref(null)
 
 const bustimes = ref([])
 
@@ -106,6 +107,80 @@ async function openCourse(course) {
   screen.value = 'course'
   const assignments = await getRequest(`/courses/${course.id}/assignments`)
   selectedCourseAssignments.value = assignments
+}
+
+
+
+const courseStats = computed(() => {
+  const assignments = selectedCourseAssignments.value
+  if (!assignments.length) return null
+
+  const graded = assignments.filter(a => a.grade !== null && a.weighting)
+  const totalWeighting = assignments.reduce((sum, a) => sum + (a.weighting || 0), 0)
+  const gradedWeighting = graded.reduce((sum, a) => sum + a.weighting, 0)
+  const weightedGrade = graded.reduce((sum, a) => sum + (a.grade * a.weighting), 0)
+
+  const totalHours = assignments.reduce((sum, a) => sum + (a.time_needed || 0), 0)
+  const upcoming = assignments.filter(a => a.grade === null)
+
+  return {
+    weightedAverage: gradedWeighting > 0 ? (weightedGrade / gradedWeighting * 100).toFixed(1) : null,
+    overallTotal: gradedWeighting > 0 ? (weightedGrade * 100).toFixed(1) : null,
+    gradedPercent: (gradedWeighting * 100).toFixed(0),
+    totalPercent: (totalWeighting * 100).toFixed(0),
+    totalHours,
+    remaining: upcoming.length,
+  }
+})
+
+const procrastination = computed(() => {
+  const assignments = selectedCourseAssignments.value
+  if (!assignments.length) return null
+
+  const upcoming = assignments.filter(a => a.grade === null && a.due_date)
+  if (!upcoming.length) return { message: "Nothing due... procrastinate forever!", hours: null }
+  const sorted = [...upcoming].sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
+
+  let freeHours = Infinity
+
+  for (const assignment of sorted) {
+    const hoursUntilDue = (new Date(assignment.due_date) - Date.now()) / (1000 * 60 * 60)
+    const buffer = hoursUntilDue - assignment.time_needed
+    if (buffer < freeHours) freeHours = buffer
+  }
+
+  if (freeHours <= 0) {
+    return { message: "You should be working right now!", hours: 0, danger: true }
+  } else if (freeHours < 24) {
+    return { message: `Only ${freeHours.toFixed(1)}h left to procrastinate`, hours: freeHours, danger: true }
+  } else {
+    const days = Math.floor(freeHours / 24)
+    const remainingHours = (freeHours % 24).toFixed(0)
+    return { message: `${days}d ${remainingHours}h of dilly dallying`, hours: freeHours, danger: false }
+  }
+})
+
+async function openAssignment(assignment) {
+  selectedAssignment.value = { ...assignment }
+  screen.value = 'assignment'
+}
+
+async function updateAssignment() {
+  try {
+    const data = await putRequest(`/assignments/${selectedAssignment.value.id}`, {
+      title: selectedAssignment.value.title,
+      due_date: selectedAssignment.value.due_date,
+      time_needed: selectedAssignment.value.time_needed,
+      weighting: selectedAssignment.value.weighting || null,
+      grade: selectedAssignment.value.grade || null,
+    })
+    selectedAssignment.value = data
+    // Update it in the list too
+    const idx = selectedCourseAssignments.value.findIndex(a => a.id === data.id)
+    if (idx !== -1) selectedCourseAssignments.value[idx] = data
+  } catch (err) {
+    console.error('Error updating assignment:', err)
+  }
 }
 
 async function addAssignment() {
@@ -335,6 +410,21 @@ const format_favourite_bus = () => {
       <div class="input-group">
         <h1 class="name">{{ selectedCourse.name }}</h1>
         <button @click="screen = 'modules'" class="btn">Back</button>
+        <div v-if="courseStats">
+
+            <p v-if="courseStats.weightedAverage">Average: {{ courseStats.weightedAverage }}%</p>
+            <p v-else>No grades yet</p>
+            <p>{{ courseStats.gradedPercent }}% / {{ courseStats.totalPercent }}% graded</p>
+            <p v-if="courseStats.overallTotal">Running total: {{ courseStats.overallTotal }}%</p>
+            <br />
+            <p>{{ courseStats.totalHours }}h total work, {{ courseStats.remaining }} assignments remaining</p>
+        </div>
+        <div v-if="procrastination">
+          <strong>Procrastination Timer</strong><br />
+          <p>
+            {{ procrastination.message }}
+          </p>
+        </div>
         <hr />
         <input v-model="newAssignmentName" type="text" placeholder="Assignment name..." class="input" />
         <input v-model="newAssignmentDueDate" type="date" class="input" />
@@ -343,9 +433,35 @@ const format_favourite_bus = () => {
         <input v-model="newAssignmentGrade" type="number" step="0.01" placeholder="Grade (0-1)..." class="input" />
         <button class="btn" @click="addAssignment">Add Assignment</button>
 
-        <button v-for="assignment in selectedCourseAssignments" :key="assignment.id" class="btn">
-          {{ assignment.title }} - Due: {{ assignment.due_date }} 
-        </button>
+        <div
+          v-for="assignment in selectedCourseAssignments"
+          :key="assignment.id"
+          @click="openAssignment(assignment)"
+        >
+          <strong>{{ assignment.title }}</strong>
+          <span v-if="assignment.weighting"> : {{ (assignment.weighting * 100).toFixed(0) }}%</span>
+          <br />
+          <div>
+            Due: {{ new Date(assignment.due_date).toLocaleDateString() }}
+            · {{ assignment.time_needed }}h
+            <span v-if="assignment.grade !== null"> · Grade: {{ assignment.grade }}</span>
+            <span v-else> · Not graded</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="screen === 'assignment'" class="card fade-in">
+      <div class="input-group">
+        <h1 class="name">{{ selectedAssignment.title }}</h1>
+        <button @click="screen = 'course'" class="btn">Back</button>
+        <hr />
+        <input v-model="selectedAssignment.title" type="text" placeholder="Title" class="input" />
+        <input v-model="selectedAssignment.due_date" type="date" class="input" />
+        <input v-model="selectedAssignment.time_needed" type="number" placeholder="Time needed (hours)" class="input" />
+        <input v-model="selectedAssignment.weighting" type="number" step="0.01" placeholder="Weighting (0-1)" class="input" />
+        <input v-model="selectedAssignment.grade" type="number" step="0.01" placeholder="Grade (0-1)" class="input" />
+        <button class="btn" @click="updateAssignment">Save</button>
       </div>
     </div>
 

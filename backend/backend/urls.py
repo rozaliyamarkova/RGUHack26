@@ -17,7 +17,7 @@ Including another URLconf
 from typing import List
 from django.contrib import admin
 from django.urls import path
-from assignments.schema import ReadAssignment, CreateAssignmentLog, ReadAssignmentLog, CreateAssignment
+from assignments.schema import ReadAssignment, CreateAssignmentLog, ReadAssignmentLog, CreateAssignment, UpdateAssignment
 from assignments.models import Assignment
 from courses.schema import CreateCourse, ReadCourse
 from students.schema import CreateStudent, CreateStudentResponse, ReadStudent
@@ -99,6 +99,14 @@ def get_course_assignments(request, course_id: int):
 def create_course_assignment(request, course_id: int, data: CreateAssignment):
     course = request.auth.courses.get(id=course_id)
     assignment = course.assignments.create(**data.dict(exclude_none=True))
+    return assignment
+
+@api.put("/assignments/{assignment_id}", response=ReadAssignment, tags=["Assignments"])
+def update_course_assignment(request, assignment_id: int, data: UpdateAssignment):
+    assignment = Assignment.objects.filter(course__student=request.auth, id=assignment_id).first()
+    for field, value in data.dict(exclude_none=True).items():
+        setattr(assignment, field, value)
+    assignment.save()
     return assignment
 
 @api.delete("/assignments/{assignment_id}", tags=["Assignments"])
