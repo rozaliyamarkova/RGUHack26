@@ -79,14 +79,6 @@ function saveStudent(data) {
   }
 }
 
-function saveFavourite(bus) {
-  if (typeof chrome !== 'undefined' && chrome.storage) {
-    chrome.storage.sync.set({ favourite_bus: bus.value }, () => {
-      console.log('Favourite bus saved:', bus.value)
-    })
-  }
-}
-
 
 function saveFavourite(bus) {
   if (typeof chrome !== 'undefined' && chrome.storage) {
