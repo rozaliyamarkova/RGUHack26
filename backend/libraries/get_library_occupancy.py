@@ -17,7 +17,7 @@ def get_sdr_occupancy():
     response = requests.get("https://www.ricecube.live/api/samples/sir_duncan_rice/day")
     response.raise_for_status()
 
-    data = json.loads(response.content)["previous"][-1]
+    data = json.loads(response.content)["current"][-1]
 
     print(data)
 
