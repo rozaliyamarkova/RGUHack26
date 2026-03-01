@@ -356,6 +356,7 @@ const format_favourite_bus = () => {
       <div class="input-group">
         <button @click="screen = 'uoalib'" class="btn">UOA Library</button>
         <button @click="screen = 'rgulib'" class="btn">RGU Library</button>
+        <button @click="screen = 'choice1'" class="btn">Back</button>
       </div>
     </div>
 
@@ -381,7 +382,7 @@ const format_favourite_bus = () => {
       <div class="divider"></div>
       <div>
         <p>Current occupancy: {{ sdr_library_occupancy.occupancy_percentage }}%</p>
-        <button @click="logEverything" class="btn">Log Occupancy Data</button>
+        <button @click="screen = 'lib'" class="btn">Back</button>
       </div>
     </div>
 
